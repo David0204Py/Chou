@@ -96,7 +96,7 @@ def consultar_recetas(conn):
 
         # Mostrar las instrucciones formateadas
         instrucciones = obtener_instrucciones(conn, receta_seleccionada)
-        st.text_area("Instrucciones:", instrucciones, height=150)
+        st.text_area("Instrucciones:", instrucciones, height=150, key="instrucciones_text_area")
 
 def agregar_receta():
     st.title("Agregar Receta")
