@@ -76,8 +76,8 @@ def consultar_recetas(conn):
     if receta_seleccionada:
         # Obtener ingredientes de la receta seleccionada
         df_ingredientes = obtener_ingredientes_por_receta(conn, receta_seleccionada)
-        cantidad_base = st.number_input("Ajustar cantidad de base", min_value=1, value=1)
-        
+        cantidad_base = st.number_input("Ajustar cantidad de base", min_value=1, value=1, key="cantidad_base")
+
         # Ajustar las cantidades
         df_ingredientes["Cantidad Ajustada"] = df_ingredientes["cantidad"] * cantidad_base
         st.table(df_ingredientes[["id_ingrediente", "Cantidad Ajustada", "unidad_medida"]])
