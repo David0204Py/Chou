@@ -55,7 +55,33 @@ def home():
     st.title("Bienvenido a Chou")
     st.markdown("<p style='text-align: center;'>En Chou, creamos repostería francesa artesanal, combinando técnica y creatividad. Ofrecemos tanto dulces como salados, todos con un toque artístico que convierte cada pieza en una pequeña obra maestra.</p>", unsafe_allow_html=True)
 
-def consultar_recetas():
+def consultar_recetas(conn):
+    st.title("Reparacion...")
+    
+    st.header("Consultar Recetas")
+    
+    receta_nombre = st.text_input("Buscar receta por nombre")
+    
+    # Consultar las recetas (sin la columna de índice)
+    query = "SELECT id_receta, nombre_receta, pagina FROM recetas_BP WHERE nombre_receta LIKE ?"
+    df_recetas = pd.read_sql_query(query, conn, params=(f"%{receta_nombre}%",))
+    st.table(df_recetas[["nombre_receta", "pagina"]])  # Tabla sin columna de índice
+
+    # Selección de una receta
+    receta_seleccionada = st.selectbox("Selecciona una receta", df_recetas["id_receta"])
+    
+    if receta_seleccionada:
+        # Obtener ingredientes de la receta seleccionada
+        df_ingredientes = obtener_ingredientes_por_receta(conn, receta_seleccionada)
+        cantidad_base = st.number_input("Ajustar cantidad de base", min_value=1, value=1)
+        
+        # Ajustar las cantidades
+        df_ingredientes["Cantidad Ajustada"] = df_ingredientes["cantidad"] * cantidad_base
+        st.table(df_ingredientes[["nombre_ingrediente", "Cantidad Ajustada", "unidad_medida"]])
+
+        # Mostrar las instrucciones formateadas
+        instrucciones = obtener_instrucciones(conn, receta_seleccionada)
+        st.text_area("Instrucciones:", instrucciones, height=150)
 
 def agregar_receta():
     st.title("Agregar Receta")
@@ -107,16 +133,27 @@ def obtener_recetas():
     cursor.execute("SELECT * FROM recetas_BP")
     return cursor.fetchall()
 
-def obtener_ingredientes_por_receta(id_receta):
-    # Consulta para obtener los ingredientes de la receta especificada
-    query = """
-    SELECT i.nombre_ingrediente, ri.cantidad, ri.unidad_medida
-    FROM ingre_recetas ri
-    JOIN ingredientes i ON ri.id_ingrediente = i.id_ingrediente
-    WHERE ri.id_receta = ?
-    """
-    cursor.execute(query, (id_receta,))
-    return cursor.fetchall()
+def obtener_ingredientes_por_receta(conn, id_receta):
+    query = '''
+    SELECT i.nombre_ingrediente, ir.cantidad, ir.unidad_medida
+    FROM ingre_recetas_BP AS ir
+    JOIN ingredientes_BP AS i ON ir.id_ingrediente = i.id_ingrediente
+    WHERE ir.id_receta = ?
+    '''
+    return pd.read_sql_query(query, conn, params=(id_receta,))
+
+def obtener_instrucciones(conn, id_receta):
+    query = '''
+    SELECT id_receta, instrucciones
+    FROM recetas_BP
+    WHERE id_receta = ?
+    ORDER BY id_receta
+    '''
+    pasos = pd.read_sql_query(query, conn, params=(id_receta,))
+    # Convertir los pasos a un solo string con salto de línea
+    instrucciones = "\n".join(f"{row['id_receta']}. {row['instrucciones']}" for _, row in pasos.iterrows())
+    return instrucciones if instrucciones else "Instrucciones no disponibles"
+
 
 # Lógica para navegar entre páginas
 if selection == "Inicio":
