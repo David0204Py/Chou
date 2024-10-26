@@ -150,9 +150,9 @@ def obtener_recetas():
 
 def obtener_ingredientes_por_receta(conn, id_receta):
     query = '''
-    SELECT ir.nombre_ingrediente, ir.cantidad, ir.unidad_medida
+    SELECT ir.id_ingrediente, ir.cantidad, ir.unidad_medida
     FROM ingre_recetas_BP AS ir
-    JOIN ingredientes_BP AS i ON ir.id_ingrediente = i.id_ingrediente
+    JOIN ingredientes_BP AS i ON ir.id_ingrediente = i.id_ingredientes
     WHERE ir.id_receta = ?
     '''
     return pd.read_sql_query(query, conn, params=(id_receta,))
