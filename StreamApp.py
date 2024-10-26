@@ -68,15 +68,15 @@ def consultar_recetas(conn):
         st.warning("No se encontraron recetas que coincidan con tu búsqueda.")
         return
     
-    st.table(df_recetas[["nombre_receta", "pagina"]])  # Tabla sin columna de índice
+    st.table(df_recetas[["nombre_receta", "cantidad"]])  # Tabla sin columna de índice
 
     # Selección de una receta
-    receta_seleccionada = st.selectbox("Selecciona una receta", df_recetas["id_receta"].tolist())
+    receta_seleccionada = st.selectbox("Selecciona una de la anteriores", df_recetas["id_receta"].tolist())
     
     if receta_seleccionada:
         # Obtener ingredientes de la receta seleccionada
         df_ingredientes = obtener_ingredientes_por_receta(conn, receta_seleccionada)
-        cantidad_base = st.number_input("Ajustar cantidad de base", min_value=1, value=1, key="cantidad_base")
+        cantidad_base = st.number_input("Ajusta la cantidad de base", min_value=1, value=1, key="cantidad_base")
 
         # Ajustar las cantidades
         df_ingredientes["Cantidad Ajustada"] = df_ingredientes["cantidad"] * cantidad_base
@@ -85,18 +85,6 @@ def consultar_recetas(conn):
         # Mostrar las instrucciones formateadas
         instrucciones = obtener_instrucciones(conn, receta_seleccionada)
         st.text_area("Instrucciones:", instrucciones, height=150)    
-    if receta_seleccionada:
-        # Obtener ingredientes de la receta seleccionada
-        df_ingredientes = obtener_ingredientes_por_receta(conn, receta_seleccionada)
-        cantidad_base = st.number_input("Ajustar cantidad de base", min_value=1, value=1)
-        
-        # Ajustar las cantidades
-        df_ingredientes["Cantidad Ajustada"] = df_ingredientes["cantidad"] * cantidad_base
-        st.table(df_ingredientes[["id_ingrediente", "Cantidad Ajustada", "unidad_medida"]])
-
-        # Mostrar las instrucciones formateadas
-        instrucciones = obtener_instrucciones(conn, receta_seleccionada)
-        st.text_area("Instrucciones:", instrucciones, height=150, key="instrucciones_text_area")
 
 def agregar_receta():
     st.title("Agregar Receta")
