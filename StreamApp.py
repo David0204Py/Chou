@@ -174,7 +174,7 @@ def obtener_instrucciones(conn, id_receta):
 if selection == "Inicio":
     home()
 elif selection == "Consultar recetas":
-    consultar_recetas()
+    consultar_recetas(conn)
 elif selection == "Agregar receta":
     agregar_receta()
 elif selection == "Inventario":
