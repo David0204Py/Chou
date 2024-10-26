@@ -56,20 +56,35 @@ def home():
     st.markdown("<p style='text-align: center;'>En Chou, creamos repostería francesa artesanal, combinando técnica y creatividad. Ofrecemos tanto dulces como salados, todos con un toque artístico que convierte cada pieza en una pequeña obra maestra.</p>", unsafe_allow_html=True)
 
 def consultar_recetas(conn):
-    st.title("Reparacion...")
-    
-    st.header("Consultar Recetas")
+    st.title("Consultar Recetas")
     
     receta_nombre = st.text_input("Buscar receta por nombre")
     
     # Consultar las recetas (sin la columna de índice)
     query = "SELECT id_receta, nombre_receta, pagina FROM recetas_BP WHERE nombre_receta LIKE ?"
     df_recetas = pd.read_sql_query(query, conn, params=(f"%{receta_nombre}%",))
+    
+    if df_recetas.empty:
+        st.warning("No se encontraron recetas que coincidan con tu búsqueda.")
+        return
+    
     st.table(df_recetas[["nombre_receta", "pagina"]])  # Tabla sin columna de índice
 
     # Selección de una receta
-    receta_seleccionada = st.selectbox("Selecciona una receta", df_recetas["id_receta"])
+    receta_seleccionada = st.selectbox("Selecciona una receta", df_recetas["id_receta"].tolist())
     
+    if receta_seleccionada:
+        # Obtener ingredientes de la receta seleccionada
+        df_ingredientes = obtener_ingredientes_por_receta(conn, receta_seleccionada)
+        cantidad_base = st.number_input("Ajustar cantidad de base", min_value=1, value=1)
+        
+        # Ajustar las cantidades
+        df_ingredientes["Cantidad Ajustada"] = df_ingredientes["cantidad"] * cantidad_base
+        st.table(df_ingredientes[["nombre_ingrediente", "Cantidad Ajustada", "unidad_medida"]])
+
+        # Mostrar las instrucciones formateadas
+        instrucciones = obtener_instrucciones(conn, receta_seleccionada)
+        st.text_area("Instrucciones:", instrucciones, height=150)    
     if receta_seleccionada:
         # Obtener ingredientes de la receta seleccionada
         df_ingredientes = obtener_ingredientes_por_receta(conn, receta_seleccionada)
