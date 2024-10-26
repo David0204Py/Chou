@@ -68,7 +68,7 @@ def consultar_recetas(conn):
         st.warning("No se encontraron recetas que coincidan con tu búsqueda.")
         return
     
-    st.table(df_recetas[["nombre_receta", "cantidad"]])  # Tabla sin columna de índice
+    st.table(df_recetas[["nombre_receta", "instrucciones"]])  # Tabla sin columna de índice
 
     # Selección de una receta
     receta_seleccionada = st.selectbox("Selecciona una de la anteriores", df_recetas["id_receta"].tolist())
