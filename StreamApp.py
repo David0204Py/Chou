@@ -61,7 +61,7 @@ def consultar_recetas(conn):
     receta_nombre = st.text_input("Buscar receta por nombre")
     
     # Consultar las recetas (sin la columna de índice)
-    query = "SELECT id_receta, nombre_receta, pagina FROM recetas_BP WHERE nombre_receta LIKE ?"
+    query = "SELECT id_receta, nombre_receta, instrucciones FROM recetas_BP WHERE nombre_receta LIKE ?"
     df_recetas = pd.read_sql_query(query, conn, params=(f"%{receta_nombre}%",))
     
     if df_recetas.empty:
