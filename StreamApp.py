@@ -92,7 +92,7 @@ def consultar_recetas(conn):
         
         # Ajustar las cantidades
         df_ingredientes["Cantidad Ajustada"] = df_ingredientes["cantidad"] * cantidad_base
-        st.table(df_ingredientes[["nombre_ingrediente", "Cantidad Ajustada", "unidad_medida"]])
+        st.table(df_ingredientes[["id_ingredients", "Cantidad Ajustada", "unidad_medida"]])
 
         # Mostrar las instrucciones formateadas
         instrucciones = obtener_instrucciones(conn, receta_seleccionada)
