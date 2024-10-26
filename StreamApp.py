@@ -150,7 +150,7 @@ def obtener_recetas():
 
 def obtener_ingredientes_por_receta(conn, id_receta):
     query = '''
-    SELECT i.nombre_ingrediente, ir.cantidad, ir.unidad_medida
+    SELECT ir.nombre_ingrediente, ir.cantidad, ir.unidad_medida
     FROM ingre_recetas_BP AS ir
     JOIN ingredientes_BP AS i ON ir.id_ingrediente = i.id_ingrediente
     WHERE ir.id_receta = ?
