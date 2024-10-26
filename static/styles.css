@@ -1,0 +1,88 @@
+/* styles.css */
+
+/* Ajuste del fondo general y estilo de texto */
+body {
+    background-color: #FFFFFF; /* Fondo blanco común */
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+ }
+ 
+ /* Estilo de los títulos */
+ h1, h2, h3 {
+    color: #000064; /* Azul oscuro */
+ }
+ 
+ /* Estilo del sidebar */
+ .stSidebar {
+    background-color: #2c3e50;
+ }
+ 
+ .stSidebar .css-10trblm {
+    color: #ecf0f1;
+ }
+ 
+ /* Estilo de los enlaces en el menú de navegación */
+ nav ul {
+    list-style-type: none;
+    background-color: #000064;
+    padding: 10px;
+ }
+ 
+ nav ul li {
+    display: inline;
+    margin-right: 10px;
+ }
+ 
+ nav ul li a {
+    text-decoration: none;
+    color: white;
+    padding: 8px 16px;
+    background-color: #C8BEB7; /* Beige */
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+ }
+ 
+ nav ul li a:hover {
+    background-color: white;
+    color: #000064;
+ }
+ 
+ /* Ajuste de los botones */
+ button {
+    background-color: #C8BEB7;
+    color: #000064;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+ }
+ 
+ button:hover {
+    background-color: #000064;
+    color: #FFFFFF;
+ }
+ 
+ .stButton button {
+    background-color: #3498db;
+    color: white;
+    border-radius: 5px;
+ }
+ 
+ /* Ajuste de las tablas */
+ table {
+    width: 100%;
+    margin: 20px 0;
+    border-collapse: collapse;
+ }
+ 
+ table th, table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+ }
+ 
+ /* Estilo adicional para el contenido */
+ .content {
+    padding: 20px;
+ }
