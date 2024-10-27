@@ -66,7 +66,7 @@ def consultar_recetas(conn):
 
     query = "SELECT id_receta, nombre_receta, instrucciones FROM recetas_BP WHERE nombre_receta LIKE ?"
     df_recetas = pd.read_sql_query(query, conn, params=(f"%{receta_nombre}%",))
-    df_recetas["instrucciones"] = df_recetas["instrucciones"].apply(lambda x: x.encode('utf-8').decode('utf-8', 'ignore'))
+    df_recetas["instrucciones"] = df_recetas["instrucciones"].apply(lambda x: x.encode('utf-8').decode('utf-8', 'ignore') if isinstance(x, str) else x)
 
     if df_recetas.empty:
         st.warning("No se encontraron recetas que coincidan con tu búsqueda.")
