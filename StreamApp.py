@@ -143,11 +143,16 @@ def agregar_receta_db(nombre, ingredientes, cantidades, unidades, instrucciones)
     for ingrediente, cantidad, unidad in zip(ingredientes, cantidades, unidades):
         cursor.execute('''INSERT INTO ingre_recetas_BP (id_receta, id_ingrediente, cantidad, unidad_medida) VALUES ((SELECT id_receta FROM recetas_BP WHERE nombre_receta = ?), (SELECT id_ingredientes FROM ingredientes_BP WHERE nombre_ingrediente = ?), ?, ?)''', (nombre, ingrediente, cantidad, unidad))
     conn.commit()
-
-# Función para obtener ingredientes disponibles
+# Funcion para obtener ingredientes disponibles
 def obtener_ingredientes_disponibles(conn):
-    cursor.execute("SELECT nombre_ingrediente FROM ingredientes_BP")
-    return [row[0] for row in cursor.fetchall()]
+    try:
+        with conn.cursor() as cursor:  # Usar un contexto para el cursor
+            cursor.execute("SELECT nombre_ingrediente FROM ingredientes_BP")
+            ingredientes = [row[0] for row in cursor.fetchall()]
+        return ingredientes
+    except Exception as e:
+        st.error(f"Error al obtener ingredientes: {e}")
+        return []  # Retornar una lista vacía en caso de error
 
 # Función para obtener todos las recetas
 def obtener_recetas():
