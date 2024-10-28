@@ -136,6 +136,59 @@ def registro_datos():
     fig2 = px.bar(df_ingredientes, x="Ingrediente", y="Precio", title="Costo de Ingredientes")
     st.plotly_chart(fig2)
 
+# Función para agregar recetas a la base de datos
+def agregar_receta_db(nombre, ingredientes, cantidades, unidades, instrucciones):
+    cursor.execute('''INSERT INTO recetas_BP (nombre_receta, instrucciones) VALUES (?, ?)''', (nombre, instrucciones))
+    conn.commit()
+    for ingrediente, cantidad, unidad in zip(ingredientes, cantidades, unidades):
+        cursor.execute('''INSERT INTO ingre_recetas_BP (id_receta, id_ingrediente, cantidad, unidad_medida) VALUES ((SELECT id_receta FROM recetas_BP WHERE nombre_receta = ?), (SELECT id_ingredientes FROM ingredientes_BP WHERE nombre_ingrediente = ?), ?, ?)''', (nombre, ingrediente, cantidad, unidad))
+    conn.commit()
+
+# Función para obtener ingredientes disponibles
+def obtener_ingredientes_disponibles(conn):
+    cursor.execute("SELECT nombre_ingrediente FROM ingredientes_BP")
+    return [row[0] for row in cursor.fetchall()]
+
+# Función para obtener todos las recetas
+def obtener_recetas():
+    cursor.execute("SELECT * FROM recetas_BP")
+    return cursor.fetchall()
+
+# Función para obtener los ingredientes por receta
+def obtener_ingredientes_por_receta(conn, id_receta):
+    query = '''
+    SELECT i.nombre_ingrediente, ir.cantidad, ir.unidad_medida
+    FROM ingre_recetas_BP AS ir
+    JOIN ingredientes_BP AS i ON ir.id_ingrediente = i.id_ingredientes
+    WHERE ir.id_receta = ?
+    '''
+    return pd.read_sql_query(query, conn, params=(id_receta,))
+
+# Función para obtener instrucciones de una receta
+def obtener_instrucciones(conn, id_receta):
+    query = '''SELECT instrucciones FROM recetas_BP WHERE id_receta = ?'''
+    pasos = pd.read_sql_query(query, conn, params=(id_receta,))
+    return "\n".join(pasos["instrucciones"]
+
+# Función para modificar los ingredientes de una receta existente en la base de datos
+def modificar_ingrediente(conn, id_receta, nuevos_ingredientes, nuevas_cantidades, nuevas_unidades):
+    # Primero, eliminamos los ingredientes actuales de la receta en la tabla ingre_recetas_BP
+    cursor.execute("DELETE FROM ingre_recetas_BP WHERE id_receta = ?", (id_receta,))
+
+    # Luego, insertamos los nuevos ingredientes con sus cantidades y unidades de medida
+    for ingrediente, cantidad, unidad in zip(nuevos_ingredientes, nuevas_cantidades, nuevas_unidades):
+        cursor.execute('''
+            INSERT INTO ingre_recetas_BP (id_receta, id_ingrediente, cantidad, unidad_medida)
+            VALUES (
+                ?, 
+                (SELECT id_ingredientes FROM ingredientes_BP WHERE nombre_ingrediente = ?), 
+                ?, ?
+            )
+        ''', (id_receta, ingrediente, cantidad, unidad))
+    conn.commit()
+
+    print(f"Ingredientes para la receta con id {id_receta} han sido actualizados exitosamente.")
+
 # Lógica de navegación
 mostrar_logotipo_pequeno()
 menu = ["Inicio", "Consultar recetas", "Agregar receta", "Inventario", "Registro de datos"]
