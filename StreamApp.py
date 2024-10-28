@@ -143,6 +143,7 @@ def agregar_receta_db(nombre, ingredientes, cantidades, unidades, instrucciones)
     for ingrediente, cantidad, unidad in zip(ingredientes, cantidades, unidades):
         cursor.execute('''INSERT INTO ingre_recetas_BP (id_receta, id_ingrediente, cantidad, unidad_medida) VALUES ((SELECT id_receta FROM recetas_BP WHERE nombre_receta = ?), (SELECT id_ingredientes FROM ingredientes_BP WHERE nombre_ingrediente = ?), ?, ?)''', (nombre, ingrediente, cantidad, unidad))
     conn.commit()
+
 # Funcion para obtener ingredientes disponibles
 def obtener_ingredientes_disponibles(conn):
     try:
@@ -173,7 +174,7 @@ def obtener_ingredientes_por_receta(conn, id_receta):
 def obtener_instrucciones(conn, id_receta):
     query = '''SELECT instrucciones FROM recetas_BP WHERE id_receta = ?'''
     pasos = pd.read_sql_query(query, conn, params=(id_receta,))
-    return "\n".join(pasos["instrucciones"]
+    return "\n".join(pasos["instrucciones"])
 
 # Función para modificar los ingredientes de una receta existente en la base de datos
 def modificar_ingrediente(conn, id_receta, nuevos_ingredientes, nuevas_cantidades, nuevas_unidades):
